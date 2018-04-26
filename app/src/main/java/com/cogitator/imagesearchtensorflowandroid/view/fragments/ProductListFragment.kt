@@ -7,12 +7,13 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.cogitator.imagesearchtensorflowandroid.R
+import com.cogitator.imagesearchtensorflowandroid.model.Product
+import com.cogitator.imagesearchtensorflowandroid.model.Products
 import com.cogitator.imagesearchtensorflowandroid.network.APIClient
 import com.cogitator.imagesearchtensorflowandroid.network.RetrofitInterface
 import kotlinx.android.synthetic.main.fragment_product_list.*
@@ -28,8 +29,6 @@ import java.util.*
 class ProductListFragment : Fragment() {
     var topLayoutManager: RecyclerView.LayoutManager? = null
     var secondLayoutManager: RecyclerView.LayoutManager? = null
-    var rvTopProducts: RecyclerView? = null
-    var rvSecondProducts: RecyclerView? = null
     var topResult: String? = null
     var secondResult: String? = null
     var mSimilarItems: Boolean = false
@@ -68,10 +67,9 @@ class ProductListFragment : Fragment() {
     private fun setupRecyclerView() {
         topLayoutManager = GridLayoutManager(activity, 2)
         secondLayoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL)
-        rvTopProducts.setLayoutManager(topLayoutManager)
-        rvSecondProducts.setLayoutManager(secondLayoutManager)
+        rvProducts.layoutManager = topLayoutManager
+        rvSecondProducts?.layoutManager = secondLayoutManager
     }
-
 
 
     private fun loadProductImage(topResultArg: String) {
@@ -79,31 +77,32 @@ class ProductListFragment : Fragment() {
         retrofitInterface = APIClient().getClient().create(RetrofitInterface::class.java)
 
         val call = retrofitInterface?.getProductList()
-        call.enqueue(object : Callback<Products>() {
-            fun onResponse(call: Call<Products>, response: Response<Products>) {
-                val products = response.body()
-                var customProducts: ArrayList<Product>
-                customProducts = ArrayList()
-                for (i in 0 until products.getProducts().size()) {
-                    if (topResultArg.equals("all", ignoreCase = true)) {
-                        customProducts = products.getProducts()
-                        break
-                    } else if (products.getProducts().get(i).getProductLabel().equalsIgnoreCase(topResultArg)) {
-                        customProducts.add(products.getProducts().get(i))
-                    }
-                }
-                if (topResultArg.equals("none", ignoreCase = true)) {
-                    Toast.makeText(context, "No similar items available!", Toast.LENGTH_SHORT).show()
-                    rvTopProducts.setAdapter(ProductAdapter(products.getProducts(), false))
-                } else {
-                    rvTopProducts.setAdapter(ProductAdapter(customProducts, false))
-                }
+        call?.enqueue(object : Callback<Products> {
+            override fun onFailure(call: Call<Products>?, t: Throwable?) {
             }
 
-            fun onFailure(call: Call<Products>, t: Throwable) {
-                Log.d("Error", t.message)
+            override fun onResponse(call: Call<Products>?, response: Response<Products>?) {
+                val products = response?.body()
+                var customProducts: MutableList<Product>
+                customProducts = ArrayList()
+                for (i in products?.products?.indices!!) {
+                    if (topResultArg.equals("all", true)) {
+                        customProducts = products.products as MutableList<Product>
+                        break
+                    } else if (products.products[i].product_label.equals(topResultArg, true)) {
+                        customProducts.add(products.products[i])
+                    }
+                }
+                if (topResultArg.equals("none", true)) {
+                    Toast.makeText(context, "No similar items available!", Toast.LENGTH_SHORT).show()
+                    rvProducts.adapter = ProductAdapter(products.products, false)
+                } else {
+                    rvProducts.adapter = ProductAdapter(customProducts, false)
+                }
+
             }
         })
+
     }
 
 

@@ -5,7 +5,6 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 
-
 /**
  * @author Ankit Kumar (ankitdroiddeveloper@gmail.com) on 26/04/2018 (MM/DD/YYYY)
  */
