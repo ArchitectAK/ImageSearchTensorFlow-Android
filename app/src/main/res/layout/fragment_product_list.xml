@@ -4,7 +4,6 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="?attr/actionBarSize"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
@@ -36,7 +35,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="32dp"
-                app:layoutManager="LinearLayoutManager"
                 tools:listitem="@layout/product_item_list" />
 
             <TextView
@@ -59,7 +57,6 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="32dp"
                 android:orientation="horizontal"
-                app:layoutManager="LinearLayoutManager"
                 app:reverseLayout="true"
                 tools:listitem="@layout/second_product_item_list" />
 
@@ -74,6 +71,6 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="16dp"
         android:padding="4dp"
-        android:src="@drawable/ic_camera" />
+        android:src="@drawable/ic_camera_alt_white_24dp" />
 
 </FrameLayout>
