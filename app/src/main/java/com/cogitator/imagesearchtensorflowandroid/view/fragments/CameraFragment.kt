@@ -8,12 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cogitator.imagesearchtensorflowandroid.R
+import com.cogitator.imagesearchtensorflowandroid.classifier.Classifier
+import com.cogitator.imagesearchtensorflowandroid.classifier.TensorFlowImageClassifier
 import com.wonderkiln.camerakit.*
 import kotlinx.android.synthetic.main.fragment_camera.*
-import com.cogitator.imagesearchtensorflowandroid.classifier.TensorFlowImageClassifier
-import com.cogitator.imagesearchtensorflowandroid.classifier.Classifier
-import android.support.design.widget.FloatingActionButton
-import com.wonderkiln.camerakit.CameraView
 import java.util.concurrent.Executors
 
 
@@ -28,7 +26,6 @@ class CameraFragment : Fragment() {
     private var secondResultConfidence: Float? = null
 
     private val cameraView: CameraView? = null
-    private val fabCamera: FloatingActionButton? = null
 
     private val INPUT_SIZE = 224
     private val IMAGE_MEAN = 128
@@ -45,7 +42,11 @@ class CameraFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_camera, container, false)
+        return inflater.inflate(R.layout.fragment_camera, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         cameraView?.addCameraKitListener(object : CameraKitEventListener {
             override fun onEvent(cameraKitEvent: CameraKitEvent) {
 
@@ -105,11 +106,11 @@ class CameraFragment : Fragment() {
             }
         })
 
-        fabClick.setOnClickListener { cameraView?.captureImage() }
+        fabClick?.setOnClickListener {
+            cameraView?.captureImage() }
 
-        initTensorFlowAndLoadModel(rootView)
 
-        return rootView
+        initTensorFlowAndLoadModel(view)
     }
 
     override fun onResume() {
@@ -127,12 +128,12 @@ class CameraFragment : Fragment() {
         executor.execute({ classifier?.close() })
     }
 
-    private fun initTensorFlowAndLoadModel(rootview: View) {
+    private fun initTensorFlowAndLoadModel(view: View) {
         executor.execute({
             try {
 
                 classifier = TensorFlowImageClassifier().create(
-                        rootview.context.assets,
+                        view.context.assets,
                         MODEL_FILE,
                         LABEL_FILE,
                         INPUT_SIZE,

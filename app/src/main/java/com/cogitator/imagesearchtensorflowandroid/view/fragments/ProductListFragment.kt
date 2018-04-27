@@ -2,7 +2,6 @@ package com.cogitator.imagesearchtensorflowandroid.view.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -17,7 +16,7 @@ import com.cogitator.imagesearchtensorflowandroid.model.Product
 import com.cogitator.imagesearchtensorflowandroid.model.Products
 import com.cogitator.imagesearchtensorflowandroid.network.APIClient
 import com.cogitator.imagesearchtensorflowandroid.network.RetrofitInterface
-import com.cogitator.imagesearchtensorflowandroid.view.adapters.ProductAdapterr
+import com.cogitator.imagesearchtensorflowandroid.view.adapters.ProductAdapter
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,13 +33,11 @@ class ProductListFragment : Fragment() {
     private var topResult: String? = null
     private var secondResult: String? = null
     private var mSimilarItems: Boolean = false
-    var fabButtonOpenCamera: FloatingActionButton? = null
     private var retrofitInterface: RetrofitInterface? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_product_list, container, false)
 
-        return rootView
+        return inflater.inflate(R.layout.fragment_product_list, container, false)
     }
 
     @SuppressLint("SetTextI18n")
@@ -97,9 +94,9 @@ class ProductListFragment : Fragment() {
                 }
                 if (topResultArg.equals("none", true)) {
                     Toast.makeText(context, "No similar items available!", Toast.LENGTH_SHORT).show()
-                    rvProducts.adapter = ProductAdapterr(products.products as MutableList<Product>, false)
+                    rvProducts.adapter = ProductAdapter(products.products as MutableList<Product>, false)
                 } else {
-                    rvProducts.adapter = ProductAdapterr(customProducts, false)
+                    rvProducts.adapter = ProductAdapter(customProducts, false)
                 }
 
             }
@@ -122,9 +119,9 @@ class ProductListFragment : Fragment() {
                     }
                 }
                 if (!secondResultArg.equals("all", ignoreCase = true))
-                    rvSecondProducts.adapter = ProductAdapterr(customProducts, true)
+                    rvSecondProducts.adapter = ProductAdapter(customProducts, true)
                 else
-                    rvSecondProducts.adapter = ProductAdapterr(products.products as MutableList<Product>, true)
+                    rvSecondProducts.adapter = ProductAdapter(products.products as MutableList<Product>, true)
 
             }
 

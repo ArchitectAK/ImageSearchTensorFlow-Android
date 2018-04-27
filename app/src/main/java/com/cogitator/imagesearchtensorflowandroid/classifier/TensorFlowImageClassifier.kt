@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.os.Trace
 import android.util.Log
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.*
 import java.util.*
 
 
@@ -68,25 +66,36 @@ class TensorFlowImageClassifier : Classifier {
         // Read the label names into memory.
         val actualFilename = labelFilename.split("file:///android_asset/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         Log.i(TAG, "Reading labels from: $actualFilename")
-        var br: BufferedReader? = null
-        try {
-            br = BufferedReader(InputStreamReader(assetManager.open(actualFilename)))
-            var line: String
-            line = br.readLine()
-            while (line.isNotEmpty()) {
-                c.labels.add(line)
-                line = br.readLine()
-            }
-            br.close()
-        } catch (e: IOException) {
-            throw RuntimeException("Problem reading label file!", e)
-        }
+
+        val inputStream: InputStream = assetManager.open(actualFilename)
+
+        inputStream.bufferedReader().useLines { lines -> lines.forEach { c.labels.add(it) } }
+        c.labels.forEach { println(">  $it") }
+
+
+//        File(actualFilename).readLines().forEach{
+//            c.labels.add(it)
+//        }
+//        var br: BufferedReader? = null
+//        try {
+//            br = BufferedReader(InputStreamReader(assetManager.open(actualFilename)))
+//            var line: String
+//            line = br.readLine()
+//            while (line.isNotEmpty()) {
+//                c.labels.add(line)
+//                if (br.readLine() != null)
+//                    line = br.readLine()
+//            }
+//            br.close()
+//        } catch (e: IOException) {
+//            throw RuntimeException("Problem reading label file!", e)
+//        }
 
         c.inferenceInterface = TensorFlowInferenceInterface(assetManager, modelFilename)
 
         // The shape of the output is [N, NUM_CLASSES], where N is the batch size.
         val operation = c.inferenceInterface?.graphOperation(outputName)
-        val numClasses = operation?.output<Int>(0)?.shape()?.size(1) as Int
+        val numClasses = operation?.output<Int>(0)?.shape()?.size(1)
         Log.i(TAG, "Read " + c.labels.size + " labels, output layer size is " + numClasses)
 
         // Ideally, inputSize could have been retrieved from the shape of the input operation.  Alas,
@@ -100,7 +109,7 @@ class TensorFlowImageClassifier : Classifier {
         c.outputNames = arrayOf(outputName)
         c.intValues = IntArray(inputSize * inputSize)
         c.floatValues = FloatArray(inputSize * inputSize * 3)
-        c.outputs = FloatArray(numClasses)
+        c.outputs = FloatArray(numClasses?.toInt()!!)
 
         return c
     }
