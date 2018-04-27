@@ -112,11 +112,11 @@ class ProductListFragment : Fragment() {
         retrofitInterface = APIClient().getClient().create(RetrofitInterface::class.java)
 
         val call = retrofitInterface?.getProductList()
-        call.enqueue(object : Callback<Products> {
+        call?.enqueue(object : Callback<Products> {
             override fun onResponse(call: Call<Products>, response: Response<Products>) {
                 val products = response.body()
                 val customProducts: MutableList<Product> = ArrayList()
-                for (i in 0 until products!!.products.size) {
+                for (i in products?.products?.indices!!) {
                     if (products.products[i].product_label.equals(secondResultArg, true)) {
                         customProducts.add(products.products[i])
                     }
