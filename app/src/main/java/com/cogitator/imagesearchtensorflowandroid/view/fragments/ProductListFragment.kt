@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.cogitator.imagesearchtensorflowandroid.model.Product
 import com.cogitator.imagesearchtensorflowandroid.model.Products
 import com.cogitator.imagesearchtensorflowandroid.network.APIClient
 import com.cogitator.imagesearchtensorflowandroid.network.RetrofitInterface
+import com.cogitator.imagesearchtensorflowandroid.view.adapters.ProductAdapterr
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,11 +29,11 @@ import java.util.*
  * @author Ankit Kumar (ankitdroiddeveloper@gmail.com) on 26/04/2018 (MM/DD/YYYY)
  */
 class ProductListFragment : Fragment() {
-    var topLayoutManager: RecyclerView.LayoutManager? = null
-    var secondLayoutManager: RecyclerView.LayoutManager? = null
-    var topResult: String? = null
-    var secondResult: String? = null
-    var mSimilarItems: Boolean = false
+    private var topLayoutManager: RecyclerView.LayoutManager? = null
+    private var secondLayoutManager: RecyclerView.LayoutManager? = null
+    private var topResult: String? = null
+    private var secondResult: String? = null
+    private var mSimilarItems: Boolean = false
     var fabButtonOpenCamera: FloatingActionButton? = null
     private var retrofitInterface: RetrofitInterface? = null
 
@@ -95,9 +97,9 @@ class ProductListFragment : Fragment() {
                 }
                 if (topResultArg.equals("none", true)) {
                     Toast.makeText(context, "No similar items available!", Toast.LENGTH_SHORT).show()
-                    rvProducts.adapter = ProductAdapter(products.products, false)
+                    rvProducts.adapter = ProductAdapterr(products.products as MutableList<Product>, false)
                 } else {
-                    rvProducts.adapter = ProductAdapter(customProducts, false)
+                    rvProducts.adapter = ProductAdapterr(customProducts, false)
                 }
 
             }
@@ -105,5 +107,46 @@ class ProductListFragment : Fragment() {
 
     }
 
+    private fun loadSecondResultsImage(secondResultArg: String) {
+
+        retrofitInterface = APIClient().getClient().create(RetrofitInterface::class.java)
+
+        val call = retrofitInterface?.getProductList()
+        call.enqueue(object : Callback<Products> {
+            override fun onResponse(call: Call<Products>, response: Response<Products>) {
+                val products = response.body()
+                val customProducts: MutableList<Product> = ArrayList()
+                for (i in 0 until products!!.products.size) {
+                    if (products.products[i].product_label.equals(secondResultArg, true)) {
+                        customProducts.add(products.products[i])
+                    }
+                }
+                if (!secondResultArg.equals("all", ignoreCase = true))
+                    rvSecondProducts.adapter = ProductAdapterr(customProducts, true)
+                else
+                    rvSecondProducts.adapter = ProductAdapterr(products.products as MutableList<Product>, true)
+
+            }
+
+            override fun onFailure(call: Call<Products>, t: Throwable) {
+                Log.d("Error", t.message)
+            }
+        })
+    }
+
+
+    fun setTopResult(result: String) {
+        topResult = result
+        loadProductImage(topResult!!)
+    }
+
+    fun setSecondResult(result: String) {
+        secondResult = result
+        loadSecondResultsImage(secondResult!!)
+    }
+
+    fun setSimilarItems(similarItems: Boolean) {
+        mSimilarItems = similarItems
+    }
 
 }
