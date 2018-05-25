@@ -109,7 +109,6 @@ class CameraFragment : Fragment() {
         fabClick?.setOnClickListener {
             cameraView?.captureImage() }
 
-
         initTensorFlowAndLoadModel(view)
     }
 

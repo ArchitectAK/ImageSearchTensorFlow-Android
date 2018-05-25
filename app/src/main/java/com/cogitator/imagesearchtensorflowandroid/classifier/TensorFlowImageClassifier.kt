@@ -132,7 +132,7 @@ class TensorFlowImageClassifier : Classifier {
 
         // Copy the input data into TensorFlow.
         Trace.beginSection("feed")
-        inferenceInterface?.feed(inputName, floatValues, 1, inputSize as Long, inputSize as Long, 3L)
+        inferenceInterface?.feed(inputName, floatValues, 1, inputSize.toLong(), inputSize.toLong(), 3L)
         Trace.endSection()
 
         // Run the inference call.
@@ -171,6 +171,4 @@ class TensorFlowImageClassifier : Classifier {
     override fun close() {
         inferenceInterface?.close()
     }
-
-
 }

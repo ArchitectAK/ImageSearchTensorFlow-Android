@@ -49,7 +49,6 @@
                 tools:text="You can also view" />
 
             <android.support.v7.widget.RecyclerView
-
                 android:id="@+id/rvSecondProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

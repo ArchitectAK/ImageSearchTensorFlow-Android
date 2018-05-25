@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.cogitator.imagesearchtensorflowandroid.model.Product
 import com.cogitator.imagesearchtensorflowandroid.model.Products
 import com.cogitator.imagesearchtensorflowandroid.network.APIClient
 import com.cogitator.imagesearchtensorflowandroid.network.RetrofitInterface
+import com.cogitator.imagesearchtensorflowandroid.view.MainActivity
 import com.cogitator.imagesearchtensorflowandroid.view.adapters.ProductAdapter
 import kotlinx.android.synthetic.main.fragment_product_list.*
 import retrofit2.Call
@@ -54,7 +56,7 @@ class ProductListFragment : Fragment() {
 
         btnDetectObject.setOnClickListener {
             val cameraFragment = CameraFragment()
-            activity!!.supportFragmentManager.beginTransaction()
+            (activity as MainActivity).supportFragmentManager.beginTransaction()
                     .replace(R.id.activity_main, cameraFragment)
                     .commit()
 
